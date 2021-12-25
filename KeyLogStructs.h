@@ -31,3 +31,24 @@ struct STRNG {
 	struct STRNG* prev;
 };
 typedef struct STRNG STRNG;
+void Sort(STRNG* list) {
+	STRNG* tmp;
+	STRNG* a;
+	LPWSTR t = L"";
+	BOOL flag = TRUE;
+	while (flag) {
+		tmp = list;
+		a = tmp->next;
+		flag = FALSE;
+		while (a) {
+			if ((tmp->act) > (a->act)) {
+				t = tmp->act;
+				tmp->act = a->act;
+				a->act = t;
+				flag = TRUE;
+			}
+			tmp = tmp->next;
+			a = a->next;
+		}
+	}
+}

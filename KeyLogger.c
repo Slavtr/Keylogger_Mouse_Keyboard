@@ -278,12 +278,6 @@ WCHAR EnToRus(WCHAR c) {
 VOID CountEverything(MAINLOG* lg) {
     InitializeCriticalSection(&section);
     MAINLOG* head = lg;
-        while (head->mlog->prev) {
-            head->mlog = head->mlog->prev;
-        }
-        while (head->klog->prev) {
-            head->klog = head->klog->prev;
-        }
     STRNG* h1;
     STRNG* keyboard = calloc(1, sizeof(STRNG));
     keyboard->prev = NULL;
@@ -309,15 +303,16 @@ VOID CountEverything(MAINLOG* lg) {
             keyboard->next->prev = keyboard;
             keyboard = keyboard->next;
         }
-        if (key->next)
-            key = key->next;
+        if (key->prev)
+            key = key->prev;
         else
             break;
         counted = FALSE;
     }
     MLOG* mkey = head->mlog;
     STRNG* mouse = calloc(1, sizeof(STRNG));
-    while (mkey->next) {
+    mkey = mkey->prev;
+    while (mkey) {
         h1 = mouse;
         LPWSTR KeyString = calloc(10500, sizeof(WCHAR));
         switch (mkey->mouseButton) {
@@ -358,7 +353,10 @@ VOID CountEverything(MAINLOG* lg) {
             mouse->next->prev = mouse;
             mouse = mouse->next;
         }
-        mkey = mkey->next;
+        if (mkey->prev)
+            mkey = mkey->prev;
+        else
+            break;
         counted = FALSE;
         free(KeyString);
     }
@@ -368,14 +366,15 @@ VOID CountEverything(MAINLOG* lg) {
         keyboard = keyboard->prev;
     mouse->next = NULL;
     keyboard->next = NULL;
-    while (key->prev) {
-        key = key->prev;
+    while (key->next) {
+        free(key->prev);
+        key = key->next;
     }
-    while (mkey->prev) {
-        mkey = mkey->prev;
+    while (mkey->next) {
+        free(mkey->prev);
+        mkey = mkey->next;
     }
     while (keyboard->prev) {
-
         keyboard = keyboard->prev;
     }
     while (mouse->prev) {
@@ -409,4 +408,4 @@ VOID CountEverything(MAINLOG* lg) {
     DeleteCriticalSection(&section);
 }
 
-// 
+// Jktu
